@@ -55,7 +55,7 @@ while True:
 
     key = "flag"
     flags = []
-    for i in list_of_paths:
+    for i in list_of_paths[::-1]:
         done = 0 
         #print(f"user_path_is -- {i}")
         get_user_info = session.get(url=url+i) # получаем html-страницу юзера
