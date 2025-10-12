@@ -5,7 +5,7 @@ import time
 
 session = requests.Session()
 url = "http://62.181.44.12:3000"
-
+sleep_time = 15
 
 adjectives = ["swift", "brave", "clever", "silent", "golden"]
 nouns = ["eagle", "shadow", "river", "nigger", "mountain", "star"]
@@ -72,6 +72,7 @@ else:
     else:
         print("Произошла ошибка при регистрации!!!")
 
+checked_users = []
 
 while parse_permisson:
     # достаем страницы всех пользователей
@@ -79,7 +80,7 @@ while parse_permisson:
     soup_users = BeautifulSoup(list_all_users_get_html, 'lxml')
 
     view_profile_tags = soup_users.find_all('a', class_="btn btn-view-profile")
-
+    
     # проходимся в обратном порядке по всем пользователям. Берем флаг и подставляем в жюрийку
     for data in view_profile_tags[::-1]:
         user_element = data['href']
@@ -90,14 +91,20 @@ while parse_permisson:
         flag_span = soup.find_all("span") # достаем <span> </span>, где лежит флаг
         username_h1 = soup.find_all("h1") # достаем логин очередного юзера
         
-        print(f"Проверяю пользователя -- {username_h1[0].text}")
+        
 
-        if len(flag_span) >= 4: # не у всех юзеров есть элемент <span> флага, таких отбрасываем
-            flag = str(flag_span[3].text)
-            done = flag_checker(flag)
-            print(f"Подставляю найденный флаг ({flag})...")
-            if (done):
-                print(f"Ура! Этот флаг верный! Жду 30 сек для обновления флага...")
-                time.sleep(30)
-                break
+        if (user_element not in checked_users):
+            print(f"Проверяю пользователя -- {username_h1[0].text}")
+            checked_users.append(user_element)
+            if len(flag_span) >= 4: # не у всех юзеров есть элемент <span> флага, таких отбрасываем
+                flag = str(flag_span[3].text)
+                done = flag_checker(flag)
+                print(f"Подставляю найденный флаг ({flag})...")
+                if (done):
+                    print(f"Ура! Этот флаг верный! Жду {sleep_time} сек для обновления флага...\n\n")
+                    time.sleep(sleep_time)
+                    break
+    if (len(checked_users) == len(view_profile_tags)):
+        print("Все юзеры просмотрены.")
+        time.sleep(5)             
         
