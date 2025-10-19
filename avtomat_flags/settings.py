@@ -4,4 +4,5 @@ LOGIN_URL = f"{BASE_URL}/auth/signin"
 CHECK_URL = f"{BASE_URL}/check-flag?flag="
 DB_PATH = "avtomat_flags/data/nigger.sqlite"
 LOGIN_FILE = "avtomat_flags/data/login.txt"
-SLEEP_TIME = 5
+FLAGS_FILE = "avtomat_flags/data/flags.txt"
+SLEEP_TIME = 10

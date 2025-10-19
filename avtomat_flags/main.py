@@ -8,10 +8,11 @@ from settings import *
 
 # === Инициализация ===
 
-session = requests.Session() 
 
 # ====== Логинимся =========
-def login(login_url, session):
+def login(login_url):
+    session = requests.Session() 
+
     headers = {
         'User-Agent': 'Mozilla/5.0',
         'Origin': login_url  
@@ -27,8 +28,10 @@ def login(login_url, session):
     login_data = {'email': email, 'password': password}
     session.post(login_url, data=login_data, headers=headers)
 
+    return session
+
 #======== Скачиваем бд ==========
-def download_db():
+def download_db(session):
     print("Скачивание базы...")
     
     resp = session.get(f"{BASE_URL}/files?file=../../app/data/database.sqlite", timeout=30)
@@ -52,7 +55,7 @@ def extract_flags_from_db():
     return flags
 
 #========== Проверям конкретный флаг =======
-def check_flag(flag):
+def check_flag(flag,session):
     try:
         resp = session.get(CHECK_URL + flag, timeout=10)
         if resp.text.strip() == "Верный флаг":
@@ -66,42 +69,54 @@ def check_flag(flag):
         return False
 
 #========= Проверяем все флаги ==========
-def check_flags(flags):
+def check_flags(flags, session):
     for flag in flags:
         # если нашли нужный флаг, обрубаем
-        if check_flag(flag):
+        if check_flag(flag, session):
             return 1
     return 0
 
+def get_new_flags(all_flags, FLAGS_FILE):
+    f = open(FLAGS_FILE, "r+")
+    checked_flags = {i.strip() for i in f.readlines()}
+    
+    new_flags = all_flags.difference(checked_flags)
+    # добавляем новые флаги в файл
+    for i in new_flags:
+        f.write(i+'\n')
+    f.close()
+    return new_flags
 
 # === Основной поток ===
+
 try:
-    login(LOGIN_URL,session)
-    download_db()
-    
-    all_flags = extract_flags_from_db()
+    while True:
+        # логинимся
+        session = login(LOGIN_URL)
 
+        # скачиваем бд
+        download_db(session)
 
-    # запускаем цикл проверки флагов
-    try:
-        while True:
-            print("☠️ Начинаю проверять флаги... ☠️")
-            time_start = time.time()
-            if check_flags(all_flags):
-                print("✅ Флаги проверены, найден нужный флаг!")
-                
-            else:
-                print("🧐 Все флаги проверены.")
+        # достаем оттуда флаги
+        all_flags = extract_flags_from_db()
+        
+        # достаем только новые флаги, старые уже проверены
+        new_flags = get_new_flags(all_flags, FLAGS_FILE)
 
-            time_finish = time.time()
-
-            check_time = (time_finish - time_start)
+        print("☠️ Начинаю проверять флаги... ☠️")
+        time_start = time.time()
+        if check_flags(new_flags, session):
+            print("✅ Флаги проверены, найден нужный флаг!")
             
-            print(f"Проверка длилась {check_time:.3f} секунд!")
-            print(f"😴 Поспим {SLEEP_TIME} секунд ...")
-            time.sleep(SLEEP_TIME)
-    except KeyboardInterrupt:
-        print("\nCTRL+C...")
+        else:
+            print("🧐 Все флаги проверены.")
 
-except Exception as e:
-    print(f"❌ Ошибка: {e}")
+        time_finish = time.time()
+
+        check_time = (time_finish - time_start)
+        
+        print(f"Проверка длилась {check_time:.3f} секунд!")
+        print(f"😴 Поспим {SLEEP_TIME} секунд ...")
+        time.sleep(SLEEP_TIME)
+except KeyboardInterrupt:
+    print("\nCTRL+C...")
