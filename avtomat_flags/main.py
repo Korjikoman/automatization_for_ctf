@@ -6,9 +6,6 @@ import time
 from settings import *
 
 
-# === Инициализация ===
-
-
 # ====== Логинимся =========
 def login(login_url):
     session = requests.Session() 
