@@ -1,4 +1,4 @@
-from flagChecker import FlagChecker
+
 from FlagSniffer import FlagSniffer
 from login import Login
 from settings import *
@@ -10,26 +10,28 @@ login_url = url + "/auth/signin"
 session = r.Session()
 headers = r.utils.default_headers()
 
-headers.update(
-    {
-        'User-Agent': 'My User Agent 1.0',
-    }
-)
 
 try:
     while True:
   
         # логинимся
         login_user = Login(email=email, password=password, session=session, headers=headers)
-        if login_user.login(login_url):
+        response = login_user.login(login_url)
+        if response != 0:
+
+            headers.update(
+                {
+                    "User-Agent": user_agent,
+                    "Content-Type": response.headers['content-type'],
+                    "Origin": url,
+
+                }
+            )
             # ищем флаги и отбираем новые
-            sniffer = FlagSniffer(session, url, flags_file, headers)
+            sniffer = FlagSniffer(session, url, flags_file, headers, last_id_file, url_checker)
             flags = sniffer.sniff()
 
-            # проверяем новые флаги
-            checker = FlagChecker(url_checker, flags)
-            if checker.check_flags():
-                print(f"✅Найден верный флаг!✅")
+            
             
             print(f"Посплю {SLEEP_TIME} секунд...😪💤💤💤")    
             time.sleep(SLEEP_TIME)

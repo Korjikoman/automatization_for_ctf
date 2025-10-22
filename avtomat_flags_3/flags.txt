@@ -1,2 +1,0 @@
-flag{publ1c_pr1v4cy_1s_n0t_s0_pr1v4t3}
-flag{BmVq5D5rGLfMfxiL}

@@ -15,10 +15,12 @@ class Login:
             request = self.session.post(login_url, data)
             if request.status_code == 200:
                 print("Залогинились!")
-                return 1
+                return request
+            
             else:
                 return 0
         else:
             print(f"Error with get-request {g.text}")
             return 0
+            
         
