@@ -82,6 +82,3 @@ for i in flag:
 resp = requests.get(f"http://192.168.5.113:8080/flag?teamid=t01&flag={fflag}")
 print(resp.status_code)
 print(resp.text)
-
-#c01d7d83-d517-d4e4-8e72-034560364683
-#c01dd1a3-9aa8-162e-0ded-6b0160365104

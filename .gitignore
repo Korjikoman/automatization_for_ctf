@@ -1,2 +1,7 @@
 .vscode/
-.park_automatization/
+.vscode
+/vscode/
+cmake-build-debug
+.idea/
+ctf01d/
+cmake-build-debug/
