@@ -6,3 +6,5 @@ cmake-build-debug
 ctf01d/
 cmake-build-debug/
 /__pycache__/
+avtomat_flags_3/__pycache__/
+avtomat_flags/__pycache__/
