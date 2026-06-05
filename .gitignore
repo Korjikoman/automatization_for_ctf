@@ -5,3 +5,4 @@ cmake-build-debug
 .idea/
 ctf01d/
 cmake-build-debug/
+/__pycache__/
